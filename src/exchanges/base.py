@@ -1,39 +1,65 @@
 import asyncio
-from abc import ABC, abstractmethod
+from abc import ABC
+from typing import Type, Any
 
 import aiohttp
 
 from src.coins.data import CoinData
 from src.coins.info import CoinInfo
 from src.coins.prices import CoinPrices
+from src.exchanges.configs.abstract import ExchangeConfig, EndpointType
+from src.exchanges.parsers.abstract import BaseParser
 from src.http_client import HttpClient
 from src.utils.logger import logger
 
 
 class ExchangeAbstract(ABC):
     TIMEOUT = aiohttp.ClientTimeout(total=30)
+    CONFIG_CLASS: Type[ExchangeConfig]
+    PARSER_CLASS: Type[BaseParser]
+
+    def __init__(self):
+        self.config = self.CONFIG_CLASS
+        self.parser = self.PARSER_CLASS(self.config)
+        self.http = HttpClient(
+            base_url=self.base_url,
+            timeout=self.timeout
+        )
 
     @classmethod
-    @abstractmethod
     def name(cls) -> str:
         """Название биржи"""
-        pass
+        return cls.CONFIG_CLASS.name
 
     @property
-    @abstractmethod
     def base_url(self) -> str:
         """URL API биржи"""
-        pass
+        return self.config.base_url
 
     @property
     def timeout(self) -> int:
         return 10
 
-    def __init__(self):
-        self.http = HttpClient(
-            base_url=self.base_url,
-            timeout=self.timeout
-        )
+    def aggregate_coins_data(self, coins_prices: dict[str, CoinPrices], coins_info: dict[str, list[CoinInfo]]):
+        coins_data: list[CoinData] = []
+        for name, item in coins_info.items():
+            price = coins_prices.get(name)
+            info = coins_info.get(name)
+
+            if not price or not info:
+                continue
+
+            for inf in info:
+                coins_data.append(CoinData(coin_prices=price, coin_info=inf))
+        return coins_data
+
+    def _get_auth_headers(self, endpoint: str, params: dict) -> dict:
+        """Генерация заголовков для аутентификации (переопределяется при необходимости)"""
+        return {}
+
+    def _sign_request(self, params: dict) -> dict:
+        """Подпись запроса (переопределяется при необходимости)"""
+        return params
 
     async def update_coins(self) -> list[CoinData]:
         """Получает все необходимые данные для CoinData и отдает их CoinAggregator"""
@@ -59,19 +85,6 @@ class ExchangeAbstract(ABC):
             logger.error(f"{self.name()}: Ошибка в update_coins: {e}")
             return []
 
-    def aggregate_coins_data(self, coins_prices: dict[str, CoinPrices], coins_info: dict[str, list[CoinInfo]]):
-        coins_data: list[CoinData] = []
-        for name, item in coins_info.items():
-            price = coins_prices.get(name)
-            info = coins_info.get(name)
-
-            if not price or not info:
-                continue
-
-            for inf in info:
-                coins_data.append(CoinData(coin_prices=price, coin_info=inf))
-        return coins_data
-
     async def _make_request(self, endpoint: str) -> dict | None:
         return await self.http.get_json(endpoint)
 
@@ -79,12 +92,20 @@ class ExchangeAbstract(ABC):
         """Корректное закрытие ресурсов"""
         await self.http.close()
 
-    @abstractmethod
-    async def get_prices(self) -> dict[str, CoinPrices] | None:
-        """Запрашивает ask и bid цены по API биржи"""
-        pass
+    async def get_prices(self) -> dict[str, Any]:
+        """Получение цен"""
+        endpoint = self.config.endpoints[EndpointType.PRICES]
+        data = await self._make_request(endpoint)
+        if not data:
+            logger.error(f"{self.name()}: Failed to fetch prices")
+            return {}
+        return self.parser.parse_prices(data)
 
-    @abstractmethod
-    async def get_info(self) -> dict[str, list[CoinInfo]] | None:
-        """Запрашивает сети, адреса, статусы депозита и вывода по API биржи"""
-        pass
+    async def get_info(self) -> dict[str, list]:
+        """Получение информации о монетах"""
+        endpoint = self.config.endpoints[EndpointType.INFO]
+        data = await self._make_request(endpoint)
+        if not data:
+            logger.error(f"{self.name()}: Failed to fetch coin info")
+            return {}
+        return self.parser.parse_info(data)

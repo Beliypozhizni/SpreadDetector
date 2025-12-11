@@ -2,8 +2,8 @@ import asyncio
 
 from src.coins.aggregator import CoinAggregator
 from src.exchanges.base import ExchangeAbstract
-from src.exchanges.bitget import BitgetClient
-from src.exchanges.kucoin import KuCoinClient
+from src.exchanges.exchanges.bitget import BitgetClient
+from src.exchanges.exchanges.kucoin import KuCoinClient
 from src.utils.logger import logger
 
 
