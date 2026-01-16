@@ -10,6 +10,7 @@ from src.coins.prices import CoinPrices
 from src.exchanges.configs.abstract import ExchangeConfig, EndpointType
 from src.exchanges.parsers.abstract import BaseParser
 from src.utils.logger import logger
+from src.utils.http_client import HttpClient
 
 
 class ExchangeAbstract(ABC):
@@ -20,6 +21,7 @@ class ExchangeAbstract(ABC):
     def __init__(self):
         self.config = self.CONFIG_CLASS
         self.parser = self.PARSER_CLASS(self.config)
+        self.http = HttpClient(base_url=self.config.base_url)
 
     @classmethod
     def name(cls) -> str:
