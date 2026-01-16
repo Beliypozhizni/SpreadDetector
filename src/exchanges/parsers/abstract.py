@@ -53,6 +53,7 @@ class BaseParser(ABC):
                     continue
 
                 valid_chains.append(self._create_coin_info(
+                    name=name,
                     chain=chain,
                     contract=contract,
                     is_deposit=is_deposit,

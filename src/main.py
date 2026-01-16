@@ -1,35 +1,73 @@
-import logging
+import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
+from src.api_v1 import router as router_v1
 from src.coins.aggregator import CoinAggregator
 from src.exchanges.manager import ExchangeManager
 from src.spreads.calculator import SpreadCalculator
+from src.spreads.storage import SpreadStorage
 
-logger = logging.getLogger(__name__)
+
+async def create_components():
+    spread_storage = SpreadStorage()
+    coin_aggregator = CoinAggregator()
+
+    spread_calculator = SpreadCalculator(
+        spread_storage=spread_storage,
+        coin_aggregator=coin_aggregator,
+    )
+    exchange_manager = ExchangeManager(
+        coin_aggregator=coin_aggregator,
+    )
+
+    return {
+        spread_storage.__class__.__name__: spread_storage,
+        coin_aggregator.__class__.__name__: coin_aggregator,
+        spread_calculator.__class__.__name__: spread_calculator,
+        exchange_manager.__class__.__name__: exchange_manager,
+    }
+
+
+async def cleanup_components(components: dict):
+    cleanup_tasks = []
+
+    if ExchangeManager.__name__ in components:
+        cleanup_tasks.append(components[ExchangeManager.__name__].stop())
+
+    await asyncio.gather(*cleanup_tasks, return_exceptions=True)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("💰 Инициализация крипто-бирж...")
+    components = await create_components()
+    exchange_manager = components[ExchangeManager.__name__]
 
-    coin_aggregator = CoinAggregator()
-    exchange_manager = ExchangeManager(coin_aggregator)
-    spread_calculator = SpreadCalculator(coin_aggregator)
+    print("Инициализация приложения")
 
     await exchange_manager.run()
 
-    print(f"✅ Загружено бирж: {len(exchange_manager.exchanges)}")
+    print(f"Приложение запущено. Бирж в работе: {len(exchange_manager.exchanges)}")
 
-    yield  # Приложение работает
+    yield components
 
-    print("🛑 Остановка бирж...")
-    exchange_manager.stop()
+    print("Остановка приложения")
+    await cleanup_components(components)
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(router_v1)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

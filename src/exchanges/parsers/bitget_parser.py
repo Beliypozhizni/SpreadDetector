@@ -8,6 +8,7 @@ class BitgetParser(BaseParser):
 
     def _create_coin_info(self, **kwargs) -> CoinInfo:
         return CoinInfo(
+            name=kwargs['name'],
             chain=kwargs['chain'],
             contract=kwargs['contract'],
             is_deposit_enabled=kwargs['is_deposit'],

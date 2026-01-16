@@ -1,3 +1,5 @@
+from typing import Callable
+
 from src.coins.data import CoinData
 from src.utils.logger import logger
 
@@ -5,8 +7,13 @@ from src.utils.logger import logger
 class CoinAggregator:
     def __init__(self):
         self.coins: dict[str, dict[str, CoinData]] = {}
+        self._on_coins_added_callbacks: list[Callable] = []
+        print('Coin Aggregator initialized')
 
-    def add_coins(self, coins_data: list[CoinData], exchange: str):
+    def on_coins_added(self, callback: Callable):
+        self._on_coins_added_callbacks.append(callback)
+
+    async def add_coins(self, coins_data: list[CoinData], exchange: str):
         for data in coins_data:
             chain = data.coin_info.chain
             contract = data.coin_info.contract
@@ -15,6 +22,13 @@ class CoinAggregator:
                 continue
             key = data.coin_info.chain + data.coin_info.contract
             self.coins.setdefault(key, {})[exchange] = data
+
+        for callback in self._on_coins_added_callbacks:
+            try:
+                await callback()
+            except Exception as e:
+                logger.error(f"Error in coins added callback: {e}")
+
         return None
 
     def get_coins(self):

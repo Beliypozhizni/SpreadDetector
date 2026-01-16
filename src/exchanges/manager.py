@@ -1,10 +1,15 @@
 import asyncio
 
 from src.coins.aggregator import CoinAggregator
-from src.exchanges.base import ExchangeAbstract
 from src.exchanges.exchanges.bitget import BitgetClient
 from src.exchanges.exchanges.kucoin import KuCoinClient
 from src.utils.logger import logger
+
+names: list[str] = []
+
+
+def get_names() -> list[str]:
+    return names
 
 
 class ExchangeManager:
@@ -12,14 +17,13 @@ class ExchangeManager:
         self.is_working = False
         self.update_interval = 5
         self.coin_aggregator = coin_aggregator
-        self.exchanges = self._init_exchanges()
-
-    def _init_exchanges(self) -> dict[str, ExchangeAbstract]:
-        exchanges = {
+        self.exchanges = {
             KuCoinClient.name(): KuCoinClient(),
             BitgetClient.name(): BitgetClient(),
         }
-        return exchanges
+
+        global names
+        names = list(self.exchanges.keys())
 
     async def run(self):
         self.is_working = True
@@ -46,7 +50,7 @@ class ExchangeManager:
                 try:
                     result = task.result()
                     if result:
-                        self.coin_aggregator.add_coins(
+                        await self.coin_aggregator.add_coins(
                             coins_data=result,
                             exchange=exchange_name
                         )

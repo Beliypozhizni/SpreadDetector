@@ -9,7 +9,6 @@ from src.coins.info import CoinInfo
 from src.coins.prices import CoinPrices
 from src.exchanges.configs.abstract import ExchangeConfig, EndpointType
 from src.exchanges.parsers.abstract import BaseParser
-from src.http_client import HttpClient
 from src.utils.logger import logger
 
 
@@ -21,10 +20,6 @@ class ExchangeAbstract(ABC):
     def __init__(self):
         self.config = self.CONFIG_CLASS
         self.parser = self.PARSER_CLASS(self.config)
-        self.http = HttpClient(
-            base_url=self.base_url,
-            timeout=self.timeout
-        )
 
     @classmethod
     def name(cls) -> str:
@@ -53,14 +48,6 @@ class ExchangeAbstract(ABC):
                 coins_data.append(CoinData(coin_prices=price, coin_info=inf))
         return coins_data
 
-    def _get_auth_headers(self, endpoint: str, params: dict) -> dict:
-        """Генерация заголовков для аутентификации (переопределяется при необходимости)"""
-        return {}
-
-    def _sign_request(self, params: dict) -> dict:
-        """Подпись запроса (переопределяется при необходимости)"""
-        return params
-
     async def update_coins(self) -> list[CoinData]:
         """Получает все необходимые данные для CoinData и отдает их CoinAggregator"""
         try:
@@ -79,7 +66,7 @@ class ExchangeAbstract(ABC):
             aggregated_coins_data = self.aggregate_coins_data(coins_prices=prices, coins_info=info)
             return aggregated_coins_data
         except ExceptionGroup as eg:
-            logger.error(f"{self.name()}: Ошибки в задачах: {len(eg.exceptions)}")
+            logger.error(f"{self.name()}: Ошибки в задачах: {len(eg.exceptions)}, {eg}")
             return []
         except Exception as e:
             logger.error(f"{self.name()}: Ошибка в update_coins: {e}")
