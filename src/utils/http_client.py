@@ -37,15 +37,3 @@ class HttpClient:
         except Exception as e:
             logger.error(f"GET {url} failed: {e}")
         return None
-
-    async def post_json(self, endpoint: str, data: dict = None, **kwargs) -> dict | None:
-        url = f"{self.base_url}/{endpoint.lstrip('/')}" if self.base_url else endpoint
-
-        try:
-            async with self.session.post(url, json=data, **kwargs) as response:
-                if response.status in (200, 201):
-                    return await response.json()
-                logger.warning(f"POST {url} returned {response.status}")
-        except Exception as e:
-            logger.error(f"POST {url} failed: {e}")
-        return None
