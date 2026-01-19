@@ -792,7 +792,7 @@
                         <tr data-spread-key="${this.getSpreadKey(spread)}"
                             onmouseenter="arbitrageTracker.showTooltip(this, ${JSON.stringify(spread).replace(/"/g, '&quot;')})"
                             onmouseleave="arbitrageTracker.hideTooltip()">
-                            <td class="symbol">${this.escapeHtml(spread.symbol)}</td>
+                            <td class="symbol">${this.escapeHtml(spread.coin_name)}</td>
                             <td>
                                 <a href="${spread.exchange_buy_url || '#'}" 
                                    target="_blank" 

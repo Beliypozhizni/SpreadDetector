@@ -1,10 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
-from src.exchanges.manager import get_names
+from src.dependencies.exchange_names import get_exchange_names
 
 router = APIRouter(prefix="/exchanges", tags=["Exchanges"])
 
 
 @router.get('/')
-async def get_exchanges():
-    return get_names()
+async def get_exchanges(request: Request):
+    return get_exchange_names(request)

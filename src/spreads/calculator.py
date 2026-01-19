@@ -43,7 +43,7 @@ class SpreadCalculator:
 
                         spreads.append(spread)
 
-            await self.spread_storage.add_spreads(spreads)
+            await self.spread_storage.set_spreads(spreads)
 
         except Exception as e:
             logger.error(e)
