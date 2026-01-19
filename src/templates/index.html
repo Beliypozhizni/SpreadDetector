@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Торговые арбитражи</title>
+    <title>Спреды</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,10 +14,7 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 1800px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1800px; margin: 0 auto; }
 
         .header {
             text-align: center;
@@ -60,9 +53,7 @@
             background: #ff4757;
         }
 
-        .status-dot.connected {
-            background: #2ed573;
-        }
+        .status-dot.connected { background: #2ed573; }
 
         .filters-section {
             background: rgba(255, 255, 255, 0.95);
@@ -80,10 +71,7 @@
             margin-bottom: 15px;
         }
 
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
+        .filter-group { display: flex; flex-direction: column; }
 
         .filter-label {
             font-weight: 600;
@@ -104,11 +92,7 @@
             border: 1px solid #e9ecef;
         }
 
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
 
         .checkbox-item input[type="checkbox"] {
             width: 16px;
@@ -122,11 +106,7 @@
             cursor: pointer;
         }
 
-        .quick-filters {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+        .quick-filters { display: flex; gap: 15px; flex-wrap: wrap; }
 
         .quick-filter {
             display: flex;
@@ -177,10 +157,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
         thead {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -199,79 +176,20 @@
         tbody tr {
             border-bottom: 1px solid #f1f1f1;
             transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
         }
 
-        tbody tr:hover {
-            background: rgba(79, 172, 254, 0.1);
-        }
+        tbody tr:hover { background: rgba(79, 172, 254, 0.1); }
 
-        tbody tr:last-child {
-            border-bottom: none;
-        }
+        tbody tr:last-child { border-bottom: none; }
 
-        td {
-            padding: 18px 15px;
-            color: #333;
-            font-weight: 500;
-        }
+        td { padding: 18px 15px; color: #333; font-weight: 500; }
 
-        .symbol {
-            font-weight: bold;
-            color: #2c3e50;
-        }
+        .symbol { font-weight: bold; color: #2c3e50; }
 
-        .exchange-link {
-            background: #e8f4fc;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: #2980b9;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            border: 1px solid #d1e7f7;
-        }
+        .price { font-family: 'Courier New', monospace; font-weight: bold; }
 
-        .exchange-link:hover {
-            background: #d1e7f7;
-            color: #1a5a8a;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(41, 128, 185, 0.2);
-        }
-
-        .price {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-
-        .spread-positive {
-            color: #27ae60;
-            font-weight: bold;
-        }
-
-        .spread-negative {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .profit-positive {
-            color: #27ae60;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-        }
-
-        .profit-negative {
-            color: #e74c3c;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-        }
-
-        .profit-neutral {
-            color: #6c757d;
-            font-family: 'Courier New', monospace;
-        }
+        .spread-positive { color: #27ae60; font-weight: bold; }
+        .spread-negative { color: #e74c3c; font-weight: bold; }
 
         .percentage {
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
@@ -280,6 +198,7 @@
             border-radius: 20px;
             font-weight: bold;
             font-size: 0.85rem;
+            white-space: nowrap;
         }
 
         .status-icon {
@@ -288,98 +207,8 @@
             display: block;
         }
 
-        .status-true {
-            color: #27ae60;
-        }
-
-        .status-false {
-            color: #e74c3c;
-        }
-
-        .age-badge {
-            background: #6c757d;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            margin-left: 5px;
-        }
-
-        .calculate-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .calculate-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            z-index: 1000;
-            max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tooltip.show {
-            opacity: 1;
-        }
-
-        .tooltip-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .tooltip-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .tooltip-label {
-            font-size: 0.75rem;
-            color: #adb5bd;
-            font-weight: 500;
-        }
-
-        .tooltip-value {
-            font-size: 0.8rem;
-            color: white;
-            font-weight: 600;
-            font-family: 'Courier New', monospace;
-        }
-
-        .tooltip-profit {
-            color: #27ae60;
-        }
-
-        .tooltip-loss {
-            color: #e74c3c;
-        }
+        .status-true { color: #27ae60; }
+        .status-false { color: #e74c3c; }
 
         .loading {
             text-align: center;
@@ -388,10 +217,7 @@
             font-size: 1.1rem;
         }
 
-        .last-update {
-            font-size: 0.85rem;
-            opacity: 0.7;
-        }
+        .last-update { font-size: 0.85rem; opacity: 0.7; }
 
         .no-results {
             text-align: center;
@@ -401,60 +227,23 @@
         }
 
         @media (max-width: 1200px) {
-            .filters-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tooltip {
-                max-width: 350px;
-            }
+            .filters-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            th, td {
-                padding: 12px 8px;
-                font-size: 0.85rem;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .exchange-link {
-                padding: 6px 8px;
-                font-size: 0.8rem;
-            }
-            
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .quick-filters {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .tooltip {
-                max-width: 300px;
-                font-size: 0.75rem;
-            }
-            
-            .tooltip-grid {
-                grid-template-columns: 1fr;
-                gap: 5px;
-            }
+            .container { padding: 10px; }
+            th, td { padding: 12px 8px; font-size: 0.85rem; }
+            .header h1 { font-size: 2rem; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .quick-filters { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Торговые Арбитражи</h1>
-            <p>Реальные спреды между биржами в режиме реального времени</p>
+            <h1>Спреды между биржами</h1>
+            <p>Данные в режиме реального времени</p>
         </div>
 
         <div class="status-bar">
@@ -475,7 +264,7 @@
                         <!-- Динамически заполнится -->
                     </div>
                 </div>
-                
+
                 <div class="filter-group">
                     <div class="filter-label">Биржи для продажи</div>
                     <div class="filter-checkboxes" id="sellExchangeFilters">
@@ -483,24 +272,19 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="quick-filters">
                 <div class="quick-filter">
-                    <input type="checkbox" id="addressMatchFilter" checked>
-                    <label for="addressMatchFilter">Точное совпадение адреса</label>
-                </div>
-                
-                <div class="quick-filter">
                     <input type="checkbox" id="withdrawalFilter" checked>
-                    <label for="withdrawalFilter">Открытый вывод</label>
+                    <label for="withdrawalFilter">Только с открытым выводом</label>
                 </div>
-                
+
                 <div class="quick-filter">
                     <input type="checkbox" id="depositFilter" checked>
-                    <label for="depositFilter">Открытый депозит</label>
+                    <label for="depositFilter">Только с открытым депозитом</label>
                 </div>
             </div>
-            
+
             <div class="filter-stats">
                 <span id="visibleCount">Отображается: 0</span>
                 <span id="totalCount">Всего: 0</span>
@@ -511,67 +295,48 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Пара</th>
+                        <th>Монета</th>
                         <th>Биржа покупки</th>
                         <th>Биржа продажи</th>
                         <th>Цена покупки</th>
                         <th>Цена продажи</th>
                         <th>Спред ($)</th>
                         <th>Спред (%)</th>
-                        <th>Профит $</th>
-                        <th>Адрес</th>
                         <th>Вывод</th>
                         <th>Депозит</th>
-                        <th>Возраст</th>
-                        <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody id="spreadsTableBody">
                     <tr>
-                        <td colspan="13" class="loading">
-                            ⏳ Загрузка данных...
-                        </td>
+                        <td colspan="9" class="loading">Загрузка данных...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Элемент для всплывающей подсказки -->
-    <div id="spreadTooltip" class="tooltip"></div>
-
     <script>
-        class ArbitrageTracker {
+        class SpreadsTracker {
             constructor() {
                 this.ws = null;
                 this.reconnectAttempts = 0;
                 this.maxReconnectAttempts = 5;
                 this.reconnectDelay = 3000;
-                
-                // Хранилище данных
+
                 this.allSpreads = [];
                 this.filteredSpreads = [];
-                this.pendingCalculations = new Set();
-                
-                // Фильтры
+
                 this.filters = {
                     buyExchanges: new Set(),
                     sellExchanges: new Set(),
-                    addressMatch: true,
-                    withdrawalEnable: true,
-                    depositEnable: true
+                    withdrawalEnabledOnly: true,
+                    depositEnabledOnly: true
                 };
-                
-                // Уникальные биржи
+
                 this.uniqueExchanges = new Set();
-                
-                // Элемент тултипа
-                this.tooltip = document.getElementById('spreadTooltip');
-                this.currentTooltipRow = null;
-                
+
                 this.initializeWebSocket();
                 this.initializeFilters();
-                this.initializeTooltip();
                 this.loadExchangesFromServer();
             }
 
@@ -579,25 +344,20 @@
                 try {
                     const wsUrl = 'ws://localhost:8000/spreads/';
                     this.ws = new WebSocket(wsUrl);
-                    
+
                     this.ws.onopen = () => {
-                        console.log('WebSocket подключен');
                         this.updateConnectionStatus(true);
                         this.reconnectAttempts = 0;
                     };
 
-                    this.ws.onmessage = (event) => {
-                        this.handleMessage(event);
-                    };
+                    this.ws.onmessage = (event) => this.handleMessage(event);
 
                     this.ws.onclose = () => {
-                        console.log('WebSocket отключен');
                         this.updateConnectionStatus(false);
                         this.attemptReconnect();
                     };
 
-                    this.ws.onerror = (error) => {
-                        console.error('WebSocket ошибка:', error);
+                    this.ws.onerror = () => {
                         this.updateConnectionStatus(false);
                     };
 
@@ -609,32 +369,29 @@
             async loadExchangesFromServer() {
                 try {
                     const response = await fetch('http://localhost:8000/exchanges');
-                    if (response.ok) {
-                        const exchanges = await response.json();
-                        this.uniqueExchanges = new Set(exchanges);
-                        this.renderExchangeFilters('buyExchangeFilters', 'buyExchanges');
-                        this.renderExchangeFilters('sellExchangeFilters', 'sellExchanges');
-                        console.log('Список бирж загружен с сервера:', exchanges);
-                    } else {
-                        throw new Error('Ошибка загрузки бирж');
-                    }
+                    if (!response.ok) throw new Error('Ошибка загрузки бирж');
+
+                    const exchanges = await response.json();
+                    this.uniqueExchanges = new Set(exchanges);
+
+                    this.renderExchangeFilters('buyExchangeFilters', 'buyExchanges');
+                    this.renderExchangeFilters('sellExchangeFilters', 'sellExchanges');
+
                 } catch (error) {
-                    console.warn('Не удалось загрузить биржи с сервера, используется автоопределение:', error);
-                    // В случае ошибки используем автоопределение из данных
+                    // fallback: определяем биржи по данным
+                    console.warn('Не удалось загрузить биржи с сервера, используем данные:', error);
                     this.updateExchangeListsFromData();
                 }
             }
 
             updateExchangeListsFromData() {
-                // Собираем уникальные биржи из данных (резервный метод)
                 this.uniqueExchanges.clear();
-                
+
                 this.allSpreads.forEach(spread => {
                     if (spread.exchange_buy) this.uniqueExchanges.add(spread.exchange_buy);
                     if (spread.exchange_sell) this.uniqueExchanges.add(spread.exchange_sell);
                 });
 
-                // Обновляем списки бирж в фильтрах
                 this.renderExchangeFilters('buyExchangeFilters', 'buyExchanges');
                 this.renderExchangeFilters('sellExchangeFilters', 'sellExchanges');
             }
@@ -642,66 +399,43 @@
             handleMessage(event) {
                 try {
                     const data = JSON.parse(event.data);
-                    
+
                     if (data && data.spreads && Array.isArray(data.spreads)) {
                         this.allSpreads = data.spreads;
-                        // Если биржи еще не загружены с сервера, используем автоопределение
-                        if (this.uniqueExchanges.size === 0) {
-                            this.updateExchangeListsFromData();
-                        }
-                        this.applyFilters();
-                        this.updateLastUpdateTime();
                     } else if (Array.isArray(data)) {
                         this.allSpreads = data;
-                        if (this.uniqueExchanges.size === 0) {
-                            this.updateExchangeListsFromData();
-                        }
-                        this.applyFilters();
-                        this.updateLastUpdateTime();
                     } else {
                         console.warn('Неизвестный формат данных:', data);
+                        return;
                     }
+
+                    if (this.uniqueExchanges.size === 0) {
+                        this.updateExchangeListsFromData();
+                    }
+
+                    this.applyFilters();
+                    this.updateLastUpdateTime();
                 } catch (error) {
                     console.error('Ошибка обработки сообщения:', error);
                 }
             }
 
             initializeFilters() {
-                // Инициализация чекбоксов быстрых фильтров
-                document.getElementById('addressMatchFilter').addEventListener('change', (e) => {
-                    this.filters.addressMatch = e.target.checked;
-                    this.applyFilters();
-                });
-
                 document.getElementById('withdrawalFilter').addEventListener('change', (e) => {
-                    this.filters.withdrawalEnable = e.target.checked;
+                    this.filters.withdrawalEnabledOnly = e.target.checked;
                     this.applyFilters();
                 });
 
                 document.getElementById('depositFilter').addEventListener('change', (e) => {
-                    this.filters.depositEnable = e.target.checked;
+                    this.filters.depositEnabledOnly = e.target.checked;
                     this.applyFilters();
-                });
-            }
-
-            initializeTooltip() {
-                // Обработчики для скрытия тултипа
-                document.addEventListener('mousemove', (e) => {
-                    if (this.tooltip.classList.contains('show')) {
-                        this.tooltip.style.left = (e.pageX + 15) + 'px';
-                        this.tooltip.style.top = (e.pageY + 15) + 'px';
-                    }
-                });
-
-                document.addEventListener('scroll', () => {
-                    this.hideTooltip();
                 });
             }
 
             renderExchangeFilters(containerId, filterType) {
                 const container = document.getElementById(containerId);
                 const exchanges = Array.from(this.uniqueExchanges).sort();
-                
+
                 if (exchanges.length === 0) {
                     container.innerHTML = '<div style="color: #6c757d; font-style: italic;">Нет данных</div>';
                     return;
@@ -714,239 +448,71 @@
                     </div>
                 `).join('');
 
-                // Добавляем обработчики событий
+                // reset + set defaults
+                this.filters[filterType].clear();
+
                 exchanges.forEach(exchange => {
                     const checkbox = document.getElementById(`${filterType}_${exchange}`);
+                    this.filters[filterType].add(exchange);
+
                     checkbox.addEventListener('change', (e) => {
-                        if (e.target.checked) {
-                            this.filters[filterType].add(exchange);
-                        } else {
-                            this.filters[filterType].delete(exchange);
-                        }
+                        if (e.target.checked) this.filters[filterType].add(exchange);
+                        else this.filters[filterType].delete(exchange);
                         this.applyFilters();
                     });
-                    
-                    // Изначально добавляем все биржи в фильтры
-                    this.filters[filterType].add(exchange);
                 });
             }
 
             applyFilters() {
                 this.filteredSpreads = this.allSpreads.filter(spread => {
-                    // Фильтр по биржам покупки
-                    if (this.filters.buyExchanges.size > 0 && !this.filters.buyExchanges.has(spread.exchange_buy)) {
-                        return false;
-                    }
-                    
-                    // Фильтр по биржам продажи
-                    if (this.filters.sellExchanges.size > 0 && !this.filters.sellExchanges.has(spread.exchange_sell)) {
-                        return false;
-                    }
-                    
-                    // Фильтр по совпадению адреса
-                    if (this.filters.addressMatch && !spread.is_address_matches) {
-                        return false;
-                    }
-                    
-                    // Фильтр по выводу
-                    if (this.filters.withdrawalEnable && !spread.is_withdrawal_enable) {
-                        return false;
-                    }
-                    
-                    // Фильтр по депозиту
-                    if (this.filters.depositEnable && !spread.is_deposit_enable) {
-                        return false;
-                    }
-                    
+                    if (this.filters.buyExchanges.size > 0 && !this.filters.buyExchanges.has(spread.exchange_buy)) return false;
+                    if (this.filters.sellExchanges.size > 0 && !this.filters.sellExchanges.has(spread.exchange_sell)) return false;
+
+                    if (this.filters.withdrawalEnabledOnly && !spread.is_withdrawal_enabled) return false;
+                    if (this.filters.depositEnabledOnly && !spread.is_deposit_enabled) return false;
+
                     return true;
                 });
-                
+
                 this.updateTable();
                 this.updateStats();
             }
 
             updateTable() {
                 const tbody = document.getElementById('spreadsTableBody');
-                
+
                 if (this.filteredSpreads.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="13" class="no-results">
-                                🔍 Нет данных, соответствующих фильтрам
-                            </td>
+                            <td colspan="9" class="no-results">Нет данных, соответствующих фильтрам</td>
                         </tr>
                     `;
                     return;
                 }
 
-                tbody.innerHTML = this.filteredSpreads.map(spread => {
-                    const isCalculating = this.pendingCalculations.has(this.getSpreadKey(spread));
-                    const hasReport = spread.detailed_report;
-                    console.log(hasReport);
-                    const profit = hasReport ? spread.detailed_report.potential_profit : null;
-                    const profitClass = profit !== null ? 
-                        (profit >= 0 ? 'profit-positive' : 'profit-negative') : 'profit-neutral';
-                    const profitText = profit !== null ? `$${this.formatNumber(profit)}` : '-';
-                    
-                    return `
-                        <tr data-spread-key="${this.getSpreadKey(spread)}"
-                            onmouseenter="arbitrageTracker.showTooltip(this, ${JSON.stringify(spread).replace(/"/g, '&quot;')})"
-                            onmouseleave="arbitrageTracker.hideTooltip()">
-                            <td class="symbol">${this.escapeHtml(spread.coin_name)}</td>
-                            <td>
-                                <a href="${spread.exchange_buy_url || '#'}" 
-                                   target="_blank" 
-                                   class="exchange-link"
-                                   title="Перейти на ${this.escapeHtml(spread.exchange_buy)}">
-                                    ${this.escapeHtml(spread.exchange_buy)}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="${spread.exchange_sell_url || '#'}" 
-                                   target="_blank" 
-                                   class="exchange-link"
-                                   title="Перейти на ${this.escapeHtml(spread.exchange_sell)}">
-                                    ${this.escapeHtml(spread.exchange_sell)}
-                                </a>
-                            </td>
-                            <td class="price">$${this.formatNumber(spread.price_buy)}</td>
-                            <td class="price">$${this.formatNumber(spread.price_sell)}</td>
-                            <td class="spread-${spread.spread_absolute >= 0 ? 'positive' : 'negative'}">
-                                $${this.formatNumber(spread.spread_absolute)}
-                            </td>
-                            <td>
-                                <span class="percentage">
-                                    ${this.formatPercentage(spread.spread_percent)}
-                                </span>
-                            </td>
-                            <td class="${profitClass}">
-                                ${profitText}
-                            </td>
-                            <td>
-                                <span class="status-icon ${true ? 'status-true' : 'status-false'}">
-                                    ${true ? '✅' : '❌'}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="status-icon ${spread.is_withdrawal_enabled ? 'status-true' : 'status-false'}">
-                                    ${spread.is_withdrawal_enabled ? '✅' : '❌'}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="status-icon ${spread.is_deposit_enabled ? 'status-true' : 'status-false'}">
-                                    ${spread.is_deposit_enabled ? '✅' : '❌'}
-                                </span>
-                            </td>
-                            <td>
-                                <span>${Math.round(0)}s</span>
-                                <span class="age-badge">${this.formatAge(spread.age_seconds)}</span>
-                            </td>
-                            <td>
-                                <button class="calculate-btn" 
-                                        onclick="arbitrageTracker.requestCalculation('${spread.symbol}', '${spread.exchange_buy}', '${spread.exchange_sell}')"
-                                        ${isCalculating ? 'disabled' : ''}>
-                                    ${isCalculating ? '⏳' : '📊'}
-                                    ${isCalculating ? 'Расчет...' : 'Рассчитать'}
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            showTooltip(rowElement, spread) {
-                this.currentTooltipRow = rowElement;
-
-                if (!spread.detailed_report) {
-                    return; // Не показываем тултип если нет детального отчета
-                }
-
-                const report = spread.detailed_report;
-                const profitClass = report.potential_profit >= 0 ? 'tooltip-profit' : 'tooltip-loss';
-                
-                this.tooltip.innerHTML = `
-                    <div style="margin-bottom: 10px; font-weight: bold;">📈 Детальный расчет ${this.escapeHtml(spread.symbol)}</div>
-                    <div class="tooltip-grid">
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Количество монет:</span>
-                            <span class="tooltip-value">${this.formatNumber(report.coin_amount)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Сумма покупки:</span>
-                            <span class="tooltip-value">$${this.formatNumber(report.purchase_amount)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Средняя цена покупки:</span>
-                            <span class="tooltip-value">$${this.formatNumber(report.avg_buy_price)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Количество для продажи:</span>
-                            <span class="tooltip-value">${this.formatNumber(report.sell_coin_amount)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Сумма продажи:</span>
-                            <span class="tooltip-value">$${this.formatNumber(report.sell_amount)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Средняя цена продажи:</span>
-                            <span class="tooltip-value">$${this.formatNumber(report.avg_sell_price)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Возможная прибыль:</span>
-                            <span class="tooltip-value ${profitClass}">$${this.formatNumber(report.potential_profit)}</span>
-                        </div>
-                        <div class="tooltip-item">
-                            <span class="tooltip-label">Время расчета:</span>
-                            <span class="tooltip-value">${new Date(report.calculation_time).toLocaleString()}</span>
-                        </div>
-                    </div>
-                `;
-
-                this.tooltip.classList.add('show');
-            }
-
-            hideTooltip() {
-                this.tooltip.classList.remove('show');
-                this.currentTooltipRow = null;
-            }
-
-            getSpreadKey(spread) {
-                return `${spread.symbol}_${spread.exchange_buy}_${spread.exchange_sell}`;
-            }
-
-            async requestCalculation(symbol, exchange_buy, exchange_sell) {
-                const spreadKey = `${symbol}_${exchange_buy}_${exchange_sell}`;
-                
-                try {
-                    this.pendingCalculations.add(spreadKey);
-                    this.updateTable();
-
-                    const response = await fetch('http://localhost:8000/api/request-calculation', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            symbol: symbol,
-                            exchange_buy: exchange_buy,
-                            exchange_sell: exchange_sell
-                        })
-                    });
-
-                    const result = await response.json();
-                    console.log('Calculation request result:', result);
-
-                    // Убираем из pending после короткой задержки
-                    setTimeout(() => {
-                        this.pendingCalculations.delete(spreadKey);
-                        this.updateTable();
-                    }, 2000);
-
-                } catch (error) {
-                    console.error('Error requesting calculation:', error);
-                    this.pendingCalculations.delete(spreadKey);
-                    this.updateTable();
-                }
+                tbody.innerHTML = this.filteredSpreads.map(spread => `
+                    <tr>
+                        <td class="symbol">${this.escapeHtml(spread.coin_name)}</td>
+                        <td>${this.escapeHtml(spread.exchange_buy)}</td>
+                        <td>${this.escapeHtml(spread.exchange_sell)}</td>
+                        <td class="price">${this.formatMoney(spread.price_buy)}</td>
+                        <td class="price">${this.formatMoney(spread.price_sell)}</td>
+                        <td class="${spread.spread_absolute >= 0 ? 'spread-positive' : 'spread-negative'}">
+                            ${this.formatMoney(spread.spread_absolute)}
+                        </td>
+                        <td><span class="percentage">${this.formatPercentage(spread.spread_percent)}</span></td>
+                        <td>
+                            <span class="status-icon ${spread.is_withdrawal_enabled ? 'status-true' : 'status-false'}">
+                                ${spread.is_withdrawal_enabled ? '✅' : '❌'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-icon ${spread.is_deposit_enabled ? 'status-true' : 'status-false'}">
+                                ${spread.is_deposit_enabled ? '✅' : '❌'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
             }
 
             updateStats() {
@@ -957,7 +523,7 @@
             updateConnectionStatus(connected) {
                 const statusDot = document.getElementById('statusDot');
                 const statusText = document.getElementById('statusText');
-                
+
                 if (connected) {
                     statusDot.className = 'status-dot connected';
                     statusText.textContent = 'Подключено';
@@ -969,42 +535,27 @@
 
             updateLastUpdateTime() {
                 const now = new Date();
-                const timeString = now.toLocaleTimeString('ru-RU');
-                document.getElementById('lastUpdate').textContent = 
-                    `Последнее обновление: ${timeString}`;
+                document.getElementById('lastUpdate').textContent =
+                    `Последнее обновление: ${now.toLocaleTimeString('ru-RU')}`;
             }
 
             attemptReconnect() {
                 if (this.reconnectAttempts < this.maxReconnectAttempts) {
                     this.reconnectAttempts++;
-                    console.log(`Попытка переподключения ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
-                    
-                    setTimeout(() => {
-                        this.initializeWebSocket();
-                    }, this.reconnectDelay);
+                    setTimeout(() => this.initializeWebSocket(), this.reconnectDelay);
                 } else {
-                    console.error('Превышено максимальное количество попыток переподключения');
                     document.getElementById('statusText').textContent = 'Ошибка подключения';
                 }
             }
 
-            formatNumber(num) {
-                return typeof num === 'number' ? num.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6
-                }) : '0.00';
+            formatMoney(num) {
+                if (typeof num !== 'number') return '$0.00';
+                return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
             }
 
-            formatPercentage(percentage) {
-                return typeof percentage === 'number' ? 
-                    `${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%` : '0.00%';
-            }
-
-            formatAge(seconds) {
-                if (seconds < 60) return 'new';
-                if (seconds < 300) return 'fresh';
-                if (seconds < 600) return 'old';
-                return 'ancient';
+            formatPercentage(p) {
+                if (typeof p !== 'number') return '0.00%';
+                return `${p >= 0 ? '+' : ''}${p.toFixed(2)}%`;
             }
 
             escapeHtml(unsafe) {
@@ -1018,22 +569,16 @@
             }
 
             disconnect() {
-                if (this.ws) {
-                    this.ws.close();
-                }
+                if (this.ws) this.ws.close();
             }
         }
 
-        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
-            window.arbitrageTracker = new ArbitrageTracker();
+            window.spreadsTracker = new SpreadsTracker();
         });
 
-        // Очистка при закрытии страницы
         window.addEventListener('beforeunload', () => {
-            if (window.arbitrageTracker) {
-                window.arbitrageTracker.disconnect();
-            }
+            if (window.spreadsTracker) window.spreadsTracker.disconnect();
         });
     </script>
 </body>
