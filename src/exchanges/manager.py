@@ -29,7 +29,7 @@ class ExchangeManager:
         self.is_working = True
         await self._update_data()
 
-    def stop(self):
+    async def stop(self):
         self.is_working = False
 
     async def _update_data(self):

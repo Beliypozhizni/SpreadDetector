@@ -577,7 +577,7 @@
 
             initializeWebSocket() {
                 try {
-                    const wsUrl = 'ws://localhost:8000/api_v1/ws/spreads/';
+                    const wsUrl = 'ws://localhost:8000/spreads/';
                     this.ws = new WebSocket(wsUrl);
                     
                     this.ws.onopen = () => {
@@ -608,7 +608,7 @@
 
             async loadExchangesFromServer() {
                 try {
-                    const response = await fetch('http://localhost:8000/api_v1/exchanges');
+                    const response = await fetch('http://localhost:8000/exchanges');
                     if (response.ok) {
                         const exchanges = await response.json();
                         this.uniqueExchanges = new Set(exchanges);

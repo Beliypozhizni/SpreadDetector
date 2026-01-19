@@ -5,7 +5,9 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from src.api_v1 import router as router_v1
+from src.exchanges.router import router as exchanges_router
+from src.spreads.router import router as spreads_router
+from src.router_page import router as pages_router
 from src.coins.aggregator import CoinAggregator
 from src.exchanges.manager import ExchangeManager
 from src.spreads.calculator import SpreadCalculator
@@ -48,7 +50,7 @@ async def lifespan(app: FastAPI):
 
     print("Инициализация приложения")
 
-    await exchange_manager.run()
+    asyncio.create_task(exchange_manager.run())
 
     print(f"Приложение запущено. Бирж в работе: {len(exchange_manager.exchanges)}")
 
@@ -59,7 +61,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(router_v1)
+app.include_router(exchanges_router)
+app.include_router(spreads_router)
+app.include_router(pages_router)
 
 app.add_middleware(
     CORSMiddleware,
