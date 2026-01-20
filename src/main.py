@@ -1,9 +1,12 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from src.chains.mapper import ChainsMapper
+from src.chains.router import router as chains_router
 from src.coins.aggregator import CoinAggregator
 from src.exchanges.manager import ExchangeManager
 from src.exchanges.router import router as exchanges_router
@@ -15,9 +18,15 @@ from src.spreads.storage import SpreadStorage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # components
+    project_root = Path(__file__).resolve().parent.parent
+    chains_map_path = project_root / "chains_map.json"
+
     spread_storage = SpreadStorage()
-    coin_aggregator = CoinAggregator()
+    chains_mapper = ChainsMapper(chains_map_path)
+
+    coin_aggregator = CoinAggregator(
+        chains_mapper=chains_mapper,
+    )
 
     spread_calculator = SpreadCalculator(
         spread_storage=spread_storage,
@@ -31,6 +40,7 @@ async def lifespan(app: FastAPI):
     # app state
     app.state.spread_storage = spread_storage
     app.state.coin_aggregator = coin_aggregator
+    app.state.chains_mapper = chains_mapper
     app.state.spread_calculator = spread_calculator
     app.state.exchange_manager = exchange_manager
 
@@ -52,6 +62,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(exchanges_router)
 app.include_router(spreads_router)
 app.include_router(pages_router)
+app.include_router(chains_router)
 
 app.add_middleware(
     CORSMiddleware,
