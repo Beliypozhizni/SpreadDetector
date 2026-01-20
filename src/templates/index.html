@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спреды</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1800px; margin: 0 auto; }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4757;
+        }
+
+        .status-dot.connected { background: #2ed573; }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group { display: flex; flex-direction: column; }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        .filter-checkboxes {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 0.85rem;
+            color: #495057;
+            cursor: pointer;
+        }
+
+        .quick-filters { display: flex; gap: 15px; flex-wrap: wrap; }
+
+        .quick-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #bbdefb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-filter:hover {
+            background: #bbdefb;
+            transform: translateY(-2px);
+        }
+
+        .quick-filter input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .quick-filter label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1565c0;
+            cursor: pointer;
+        }
+
+        .filter-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .spreads-table {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        th {
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f1f1;
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover { background: rgba(79, 172, 254, 0.1); }
+
+        tbody tr:last-child { border-bottom: none; }
+
+        td { padding: 18px 15px; color: #333; font-weight: 500; }
+
+        .symbol { font-weight: bold; color: #2c3e50; }
+
+        .price { font-family: 'Courier New', monospace; font-weight: bold; }
+
+        .spread-positive { color: #27ae60; font-weight: bold; }
+        .spread-negative { color: #e74c3c; font-weight: bold; }
+
+        .percentage {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .status-icon {
+            font-size: 1.2rem;
+            text-align: center;
+            display: block;
+        }
+
+        .status-true { color: #27ae60; }
+        .status-false { color: #e74c3c; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .last-update { font-size: 0.85rem; opacity: 0.7; }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 1200px) {
+            .filters-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            th, td { padding: 12px 8px; font-size: 0.85rem; }
+            .header h1 { font-size: 2rem; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .quick-filters { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Спреды между биржами</h1>
+            <p>Данные в режиме реального времени</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="connection-status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Подключение...</span>
+            </div>
+            <div class="last-update" id="lastUpdate">
+                Последнее обновление: --
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <div class="filter-label">Биржи для покупки</div>
+                    <div class="filter-checkboxes" id="buyExchangeFilters">
+                        <!-- Динамически заполнится -->
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">Биржи для продажи</div>
+                    <div class="filter-checkboxes" id="sellExchangeFilters">
+                        <!-- Динамически заполнится -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-filters">
+                <div class="quick-filter">
+                    <input type="checkbox" id="withdrawalFilter" checked>
+                    <label for="withdrawalFilter">Только с открытым выводом</label>
+                </div>
+
+                <div class="quick-filter">
+                    <input type="checkbox" id="depositFilter" checked>
+                    <label for="depositFilter">Только с открытым депозитом</label>
+                </div>
+            </div>
+
+            <div class="filter-stats">
+                <span id="visibleCount">Отображается: 0</span>
+                <span id="totalCount">Всего: 0</span>
+            </div>
+        </div>
+
+        <div class="spreads-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Монета</th>
+                        <th>Биржа покупки</th>
+                        <th>Биржа продажи</th>
+                        <th>Цена покупки</th>
+                        <th>Цена продажи</th>
+                        <th>Спред ($)</th>
+                        <th>Спред (%)</th>
+                        <th>Вывод</th>
+                        <th>Депозит</th>
+                    </tr>
+                </thead>
+                <tbody id="spreadsTableBody">
+                    <tr>
+                        <td colspan="9" class="loading">Загрузка данных...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        class SpreadsTracker {
+            constructor() {
+                this.ws = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.reconnectDelay = 3000;
+
+                this.allSpreads = [];
+                this.filteredSpreads = [];
+
+                this.filters = {
+                    buyExchanges: new Set(),
+                    sellExchanges: new Set(),
+                    withdrawalEnabledOnly: true,
+                    depositEnabledOnly: true
+                };
+
+                this.uniqueExchanges = new Set();
+
+                this.initializeWebSocket();
+                this.initializeFilters();
+                this.loadExchangesFromServer();
+            }
+
+            initializeWebSocket() {
+                try {
+                    const wsUrl = 'ws://localhost:8000/spreads/';
+                    this.ws = new WebSocket(wsUrl);
+
+                    this.ws.onopen = () => {
+                        this.updateConnectionStatus(true);
+                        this.reconnectAttempts = 0;
+                    };
+
+                    this.ws.onmessage = (event) => this.handleMessage(event);
+
+                    this.ws.onclose = () => {
+                        this.updateConnectionStatus(false);
+                        this.attemptReconnect();
+                    };
+
+                    this.ws.onerror = () => {
+                        this.updateConnectionStatus(false);
+                    };
+
+                } catch (error) {
+                    console.error('Ошибка инициализации WebSocket:', error);
+                }
+            }
+
+            async loadExchangesFromServer() {
+                try {
+                    const response = await fetch('http://localhost:8000/exchanges');
+                    if (!response.ok) throw new Error('Ошибка загрузки бирж');
+
+                    const exchanges = await response.json();
+                    this.uniqueExchanges = new Set(exchanges);
+
+                    this.renderExchangeFilters('buyExchangeFilters', 'buyExchanges');
+                    this.renderExchangeFilters('sellExchangeFilters', 'sellExchanges');
+
+                } catch (error) {
+                    // fallback: определяем биржи по данным
+                    console.warn('Не удалось загрузить биржи с сервера, используем данные:', error);
+                    this.updateExchangeListsFromData();
+                }
+            }
+
+            updateExchangeListsFromData() {
+                this.uniqueExchanges.clear();
+
+                this.allSpreads.forEach(spread => {
+                    if (spread.exchange_buy) this.uniqueExchanges.add(spread.exchange_buy);
+                    if (spread.exchange_sell) this.uniqueExchanges.add(spread.exchange_sell);
+                });
+
+                this.renderExchangeFilters('buyExchangeFilters', 'buyExchanges');
+                this.renderExchangeFilters('sellExchangeFilters', 'sellExchanges');
+            }
+
+            handleMessage(event) {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data && data.spreads && Array.isArray(data.spreads)) {
+                        this.allSpreads = data.spreads;
+                    } else if (Array.isArray(data)) {
+                        this.allSpreads = data;
+                    } else {
+                        console.warn('Неизвестный формат данных:', data);
+                        return;
+                    }
+
+                    if (this.uniqueExchanges.size === 0) {
+                        this.updateExchangeListsFromData();
+                    }
+
+                    this.applyFilters();
+                    this.updateLastUpdateTime();
+                } catch (error) {
+                    console.error('Ошибка обработки сообщения:', error);
+                }
+            }
+
+            initializeFilters() {
+                document.getElementById('withdrawalFilter').addEventListener('change', (e) => {
+                    this.filters.withdrawalEnabledOnly = e.target.checked;
+                    this.applyFilters();
+                });
+
+                document.getElementById('depositFilter').addEventListener('change', (e) => {
+                    this.filters.depositEnabledOnly = e.target.checked;
+                    this.applyFilters();
+                });
+            }
+
+            renderExchangeFilters(containerId, filterType) {
+                const container = document.getElementById(containerId);
+                const exchanges = Array.from(this.uniqueExchanges).sort();
+
+                if (exchanges.length === 0) {
+                    container.innerHTML = '<div style="color: #6c757d; font-style: italic;">Нет данных</div>';
+                    return;
+                }
+
+                container.innerHTML = exchanges.map(exchange => `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="${filterType}_${exchange}" value="${exchange}" checked>
+                        <label for="${filterType}_${exchange}">${this.escapeHtml(exchange)}</label>
+                    </div>
+                `).join('');
+
+                // reset + set defaults
+                this.filters[filterType].clear();
+
+                exchanges.forEach(exchange => {
+                    const checkbox = document.getElementById(`${filterType}_${exchange}`);
+                    this.filters[filterType].add(exchange);
+
+                    checkbox.addEventListener('change', (e) => {
+                        if (e.target.checked) this.filters[filterType].add(exchange);
+                        else this.filters[filterType].delete(exchange);
+                        this.applyFilters();
+                    });
+                });
+            }
+
+            applyFilters() {
+                this.filteredSpreads = this.allSpreads.filter(spread => {
+                    if (this.filters.buyExchanges.size > 0 && !this.filters.buyExchanges.has(spread.exchange_buy)) return false;
+                    if (this.filters.sellExchanges.size > 0 && !this.filters.sellExchanges.has(spread.exchange_sell)) return false;
+
+                    if (this.filters.withdrawalEnabledOnly && !spread.is_withdrawal_enabled) return false;
+                    if (this.filters.depositEnabledOnly && !spread.is_deposit_enabled) return false;
+
+                    return true;
+                });
+
+                this.updateTable();
+                this.updateStats();
+            }
+
+            updateTable() {
+                const tbody = document.getElementById('spreadsTableBody');
+
+                if (this.filteredSpreads.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="no-results">Нет данных, соответствующих фильтрам</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = this.filteredSpreads.map(spread => `
+                    <tr>
+                        <td class="symbol">${this.escapeHtml(spread.coin_name)}</td>
+                        <td>${this.escapeHtml(spread.exchange_buy)}</td>
+                        <td>${this.escapeHtml(spread.exchange_sell)}</td>
+                        <td class="price">${this.formatMoney(spread.price_buy)}</td>
+                        <td class="price">${this.formatMoney(spread.price_sell)}</td>
+                        <td class="${spread.spread_absolute >= 0 ? 'spread-positive' : 'spread-negative'}">
+                            ${this.formatMoney(spread.spread_absolute)}
+                        </td>
+                        <td><span class="percentage">${this.formatPercentage(spread.spread_percent)}</span></td>
+                        <td>
+                            <span class="status-icon ${spread.is_withdrawal_enabled ? 'status-true' : 'status-false'}">
+                                ${spread.is_withdrawal_enabled ? '✅' : '❌'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-icon ${spread.is_deposit_enabled ? 'status-true' : 'status-false'}">
+                                ${spread.is_deposit_enabled ? '✅' : '❌'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            updateStats() {
+                document.getElementById('visibleCount').textContent = `Отображается: ${this.filteredSpreads.length}`;
+                document.getElementById('totalCount').textContent = `Всего: ${this.allSpreads.length}`;
+            }
+
+            updateConnectionStatus(connected) {
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+
+                if (connected) {
+                    statusDot.className = 'status-dot connected';
+                    statusText.textContent = 'Подключено';
+                } else {
+                    statusDot.className = 'status-dot';
+                    statusText.textContent = 'Отключено';
+                }
+            }
+
+            updateLastUpdateTime() {
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent =
+                    `Последнее обновление: ${now.toLocaleTimeString('ru-RU')}`;
+            }
+
+            attemptReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    setTimeout(() => this.initializeWebSocket(), this.reconnectDelay);
+                } else {
+                    document.getElementById('statusText').textContent = 'Ошибка подключения';
+                }
+            }
+
+            formatMoney(num) {
+                if (typeof num !== 'number') return '$0.00';
+                return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
+            }
+
+            formatPercentage(p) {
+                if (typeof p !== 'number') return '0.00%';
+                return `${p >= 0 ? '+' : ''}${p.toFixed(2)}%`;
+            }
+
+            escapeHtml(unsafe) {
+                if (typeof unsafe !== 'string') return unsafe;
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            disconnect() {
+                if (this.ws) this.ws.close();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.spreadsTracker = new SpreadsTracker();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (window.spreadsTracker) window.spreadsTracker.disconnect();
+        });
+    </script>
+</body>
+</html>
